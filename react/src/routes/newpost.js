@@ -18,16 +18,14 @@ function NewPost() {
   };
   const onSubmit = async (event) => {
     event.preventDefault();
-    for (let i = 1; i < 100; i++) {
-      await axios.post(`/newpost`, {
-        boardname: name,
-        title: title + i.toString(),
-        content: content + i.toString(),
-        date: new Date().toISOString().slice(0, 19).replace("T", " "),
-        universityname: universityname,
-        username: username,
-      });
-    }
+    await axios.post(`/newpost`, {
+      boardname: name,
+      title: title,
+      content: content,
+      date: new Date().toISOString().slice(0, 19).replace("T", " "),
+      universityname: universityname,
+      username: username,
+    });
 
     document.location.href = `/everyboard/${name}`;
   };
