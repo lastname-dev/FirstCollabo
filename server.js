@@ -33,6 +33,32 @@ app.get("/everyboards/:universityname", function (req, res) {
   });
 });
 
+app.get("/getcomments/user/:username/:page/:numofposts", function (req, res) {
+  const numberOfPosts = req.params.numofposts;
+  const page = (req.params.page - 1) * numberOfPosts;
+  const query = `select post.id, post.title, comment.content, comment.likes from comment, post where post.username = '${req.params.username}' and comment.postid = post.id order by id desc limit ${page}, ${numberOfPosts}`;
+  db.query(query, function (err, results, fields) {
+    if (err) {
+      console.log(err);
+    } else {
+      res.send(results);
+    }
+  });
+});
+
+app.get("/getposts/user/:username/:page/:numofposts", function (req, res) {
+  const numberOfPosts = req.params.numofposts;
+  const page = (req.params.page - 1) * numberOfPosts;
+  const query = `select * from post where username = '${req.params.username}' order by id desc limit ${page}, ${numberOfPosts}`;
+  db.query(query, function (err, results, fields) {
+    if (err) {
+      console.log(err);
+    } else {
+      res.send(results);
+    }
+  });
+});
+
 app.get(
   "/getposts/:universityname/:boardname/:page/:numofposts",
   function (req, res) {
@@ -62,6 +88,28 @@ app.get("/getpost/:universityname/:boardname/maxlenth", function (req, res) {
 
 app.get("/universities", function (req, res) {
   const query = `select * from university`;
+  db.query(query, function (err, results, fields) {
+    if (err) {
+      console.log(err);
+    } else {
+      res.send(results);
+    }
+  });
+});
+
+app.get("/postdetail/:id", function (req, res) {
+  const query = `select * from post, board where post.id = '${req.params.id}' and post.boardname = board.ename`;
+  db.query(query, function (err, results, fields) {
+    if (err) {
+      console.log(err);
+    } else {
+      res.send(results[0]);
+    }
+  });
+});
+
+app.get("/comments/post/:id", function (req, res) {
+  const query = `select * from comment where postid = '${req.params.id}'`;
   db.query(query, function (err, results, fields) {
     if (err) {
       console.log(err);
@@ -134,6 +182,47 @@ app.post("/newpost", function (req, res) {
       console.log(err);
     } else {
       res.send(true);
+    }
+  });
+});
+
+app.post("/postdetail/:id/likes", function (req, res) {
+  const query = `update post set likes = likes+ 1 where id = '${req.params.id}';`;
+  db.query(query, function (err, results, fields) {
+    if (err) {
+      console.log(err);
+    } else {
+      const newQuery = `select likes from post where id = '${req.params.id}';`;
+      db.query(newQuery, function (newErr, newResults, newFields) {
+        if (newErr) {
+          console.log(newErr);
+        } else {
+          res.send(newResults);
+        }
+      });
+    }
+  });
+});
+
+app.post("/comments/post/:id", function (req, res) {
+  const id = uniqid();
+  const postid = req.params.id;
+  const username = req.body.username;
+  const content = req.body.content;
+  const localdate = req.body.localdate;
+  const query = `insert into comment values ('${id}', '${postid}', '${username}', '${content}', '${localdate}', 0);`;
+  db.query(query, function (err, results, fields) {
+    if (err) {
+      console.log(err);
+    } else {
+      const newQuery = `select * from comment where postid = '${req.params.id}'`;
+      db.query(newQuery, function (newErr, newResults, newFields) {
+        if (newErr) {
+          console.log(newErr);
+        } else {
+          res.send(newResults);
+        }
+      });
     }
   });
 });

@@ -39,11 +39,19 @@ function EveryBoardList() {
         >
           {username !== null ? (
             <div style={buttonListStyle}>
-              <Button variant="light" style={buttonStyle}>
+              <Button
+                href={`/mypost/${username}`}
+                variant="light"
+                style={buttonStyle}
+              >
                 내가 쓴 글
               </Button>
-              <Button variant="light" style={buttonStyle}>
-                댓글 단 글
+              <Button
+                href={`/mycomment/${username}`}
+                variant="light"
+                style={buttonStyle}
+              >
+                내가 쓴 댓글
               </Button>
               <Button variant="light" style={buttonStyle}>
                 스크랩

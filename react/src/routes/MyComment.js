@@ -1,18 +1,22 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Table, Button } from "react-bootstrap";
+import { Table } from "react-bootstrap";
 import { useParams } from "react-router";
 import Navi from "../components/Navi";
 
-function EveryBoardPage() {
-  const { name } = useParams();
+function MyComments() {
+  const { username } = useParams();
+  const sessionName = sessionStorage.getItem("username");
+  if (username !== sessionName) {
+    alert("다시 로그인 해주세요");
+    document.location.href = "/everyboardlist";
+  }
   const [index, setIndex] = useState(1);
   const [loading, setLoading] = useState(true);
   const [firstLoading, setFirstLoading] = useState(true);
   const [posts, setPosts] = useState([]);
   const numOfPosts = 20;
   const [scrollTop, setScrollTop] = useState(0);
-  const universityname = sessionStorage.getItem("universityname");
 
   const onScroll = () => {
     setScrollTop(document.documentElement.scrollTop);
@@ -20,9 +24,7 @@ function EveryBoardPage() {
 
   const getPosts = async () => {
     const futurePosts = (
-      await axios.get(
-        `/getposts/${universityname}/${name}/${index}/${numOfPosts}`
-      )
+      await axios.get(`/getcomments/user/${username}/${index}/${numOfPosts}`)
     ).data;
     setPosts((currentPosts) => [...currentPosts, ...futurePosts]);
     setIndex((current) => current + 1);
@@ -48,18 +50,10 @@ function EveryBoardPage() {
         <div>loading...</div>
       ) : (
         <div>
-          <Button
-            variant="light"
-            style={{ margin: "30px 30px 0px 30px", width: "80%" }}
-            href={`/${name}/newpost`}
-          >
-            게시글 작성
-          </Button>
           <Table style={{ margin: "0px 30px 30px 30px", width: "80%" }}>
             <thead>
               <tr>
-                <th style={{ width: "60%" }}>제목</th>
-                <th style={{ width: "20%" }}>작성자</th>
+                <th style={{ width: "80%" }}>댓글 내용</th>
                 <th style={{ width: "20%" }}>좋아요</th>
               </tr>
             </thead>
@@ -72,8 +66,10 @@ function EveryBoardPage() {
                   }}
                   style={{ height: "50px" }}
                 >
-                  <td>{post.title}</td>
-                  <td>{post.username}</td>
+                  <td>
+                    <h5>{post.title}</h5>
+                    <p>{post.content}</p>
+                  </td>
                   <td>{post.likes}</td>
                 </tr>
               ))}
@@ -87,4 +83,4 @@ function EveryBoardPage() {
   );
 }
 
-export default EveryBoardPage;
+export default MyComments;

@@ -7,6 +7,9 @@ import Logout from "./routes/Logout";
 import Signin from "./routes/Signin";
 import EveryBoardPage from "./routes/EveryBoardPage";
 import NewPost from "./routes/newpost";
+import PostDetail from "./routes/postDetail";
+import MyPost from "./routes/MyPosts";
+import MyComments from "./routes/MyComment";
 
 function App() {
   return (
@@ -27,6 +30,13 @@ function App() {
           element={<EveryBoardPage />}
         />
         <Route method="get" path="/:name/newpost" element={<NewPost />} />
+        <Route method="get" path="/post/:id" element={<PostDetail />} />
+        <Route method="get" path="/mypost/:username" element={<MyPost />} />
+        <Route
+          method="get"
+          path="/mycomment/:username"
+          element={<MyComments />}
+        />
       </Routes>
     </BrowserRouter>
   );
